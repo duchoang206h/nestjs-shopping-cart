@@ -1,5 +1,5 @@
 import { IsEmail,IsString,Length, IsNotEmpty } from 'class-validator';
-export class CreateUser {
+export class CreateCustomerDto {
     @IsEmail()@IsNotEmpty()
     email:string;
     @IsString()@IsNotEmpty()@Length(6,30)

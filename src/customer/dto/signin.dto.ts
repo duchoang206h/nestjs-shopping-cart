@@ -1,4 +1,4 @@
-import {IsEmail,IsString,Length, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsString, Length, IsNotEmpty } from 'class-validator';
 export class SigninDto {
     @IsEmail()@IsNotEmpty()
     email:string;

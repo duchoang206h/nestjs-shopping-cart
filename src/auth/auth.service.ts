@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { UserService } from '../user/user.service';
-import { SigninDto,CreateUser } from '../user/dto'
+import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
+import { UserService } from '../customer/customer.service';
+import { SigninDto,CreateUser } from '../customer/dto'
 import * as bcrypt from 'bcrypt';
-import { User} from '../user/user.entity'
+import { User} from '../customer/user.entity'
 @Injectable( )
 export class AuthService{
     constructor(private readonly userService: UserService){
@@ -10,7 +10,10 @@ export class AuthService{
     async signup(newUser: CreateUser): Promise <boolean| User>{
         try {
             const result = await this.userService.create(newUser);
-            if(!result ) return false;
+            if(!result ) {
+               console.log('Lỗi huhu');
+               return false
+            };
             return result
 
         } catch (error) {
