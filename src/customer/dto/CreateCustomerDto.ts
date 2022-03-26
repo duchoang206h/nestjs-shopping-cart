@@ -5,7 +5,9 @@ export class CreateCustomerDto {
     @IsString()@IsNotEmpty()@Length(6,30)
     password:string;
     @IsString()
-    number: string
+    phone_number: string
     @IsString()
     address: string
+    @IsString()
+    fullname: string
 }

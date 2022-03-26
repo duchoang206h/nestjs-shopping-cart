@@ -1,37 +1,44 @@
 import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
-import { UserService } from '../customer/customer.service';
-import { SigninDto,CreateUser } from '../customer/dto'
+import { CustomerService } from '../customer/customer.service';
+import { SigninDto, CreateCustomerDto } from '../customer/dto'
 import * as bcrypt from 'bcrypt';
-import { User} from '../customer/user.entity'
+import { Customer } from '../entities'
+import { JWT_SECRET, TOEKEN_EXPIRED } from '../config/key'
+import * as jwt from 'jsonwebtoken'
 @Injectable( )
 export class AuthService{
-    constructor(private readonly userService: UserService){
+    constructor(private readonly custemerService: CustomerService){
     }
-    async signup(newUser: CreateUser): Promise <boolean| User>{
+    async signup(newCustomer: CreateCustomerDto): Promise <Customer>{
         try {
-            const result = await this.userService.create(newUser);
+            const result = await this.custemerService.create(newCustomer);
             if(!result ) {
-               console.log('Lỗi huhu');
-               return false
+               return null
             };
             return result
 
         } catch (error) {
             console.log(error);
-            return false;
+            return null;
         }
     }
-    async signin(user:SigninDto):Promise<boolean | User> {
+    async signin(customer: SigninDto):Promise< Customer & { token: string}> {
         try {
-            const isExist = await this.userService.findOne(user.email);
-            console.log("Checking", isExist);
-            if(!isExist) return false;
-            const isValidPass = await bcrypt.compare(user.password, isExist.password);
-            if(!isValidPass) return false;
-            return isExist;
+            const result = await this.custemerService.findOne(customer.email);
+            if(!result) return null;
+            const isValidPass = await bcrypt.compare(customer.password, result.password);
+            if(!isValidPass) return null;
+            const token =  await jwt.sign({
+                data:{
+                    id: result.id,
+                    email: result.email
+                }
+            }, JWT_SECRET, { expiresIn: TOEKEN_EXPIRED})
+            const response = Object.assign(result, {token: token})
+            return response
         } catch (error) {
             console.log(error);
-            return false
+            return null
         }
        
     }

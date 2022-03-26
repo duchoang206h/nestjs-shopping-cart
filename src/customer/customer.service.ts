@@ -21,30 +21,24 @@ export class CustomerService {
            return result;
        } catch (error) {
            console.log(error);
-           
+           return null
        }
    }
-   async create(newCustomer:CreateCustomerDto):Promise<boolean|Customer> {
+   async create(newCustomer:CreateCustomerDto):Promise<Customer> {
     try {
-        console.log("newCustomer", newCustomer);
         const validCustomer = await this.customerRepository.find({
             where:{
                 email: newCustomer.email
             }
         })
-        console.log("Valid Customer",validCustomer);
-        if(validCustomer.length) return ;
+        if(validCustomer.length) return null;
         const saltOrRounds = 10;
         newCustomer.password = await bcrypt.hash(newCustomer.password,saltOrRounds)
         const result = await this.customerRepository.save(newCustomer);
-        console.log("result",result);
         return result;
     } catch (error) {
         console.log(error);
-        throw new HttpException({
-               status: HttpCode(500),
-               error: 'Internal server error',
-        },500)
+        return null
     }
    }
 }
