@@ -4,8 +4,5 @@ import { CustomerService } from './customer.service'
 @Controller('customer')
 export class CustomerController {
   constructor(private customerService: CustomerService){}
-@Post("create")
-hello(){
-    return "Hello";
-}
+
 }

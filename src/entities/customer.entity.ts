@@ -2,7 +2,7 @@ import { PrimaryGeneratedColumn, Entity, Column, OneToMany, OneToOne } from 'typ
 import { Cart } from './cart.entity'
 import { Order } from './order.entity'
 import { Transaction } from './transactioon.entity'
-
+import { Exclude } from 'class-transformer';
 @Entity()
 export class Customer{
     @PrimaryGeneratedColumn('increment')
@@ -13,7 +13,7 @@ export class Customer{
 
     @Column()
     email:string
-
+    @Exclude() // Serialization 
     @Column()
     password: string
 
@@ -29,4 +29,7 @@ export class Customer{
     orders: Order[]
     @OneToMany(()=>Transaction, transaction => transaction.customer)
     transactions: Transaction[]
+    constructor(partial: Partial<Customer>) {
+        Object.assign(this, partial);
+      }
 }

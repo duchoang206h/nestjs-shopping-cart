@@ -1,5 +1,4 @@
 import { Injectable, Inject, HttpException ,HttpStatus, HttpCode } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Customer } from '../entities';
 import { Repository } from 'typeorm';
 import { CreateCustomerDto } from './dto'
@@ -9,11 +8,13 @@ import { CUSTOMER_REPOSITORY } from '../constants'
 export class CustomerService {
     constructor( 
     @Inject(CUSTOMER_REPOSITORY)
-    private readonly customerRepository: Repository<Customer>){};
+    private readonly customerRepository: Repository<Customer>,
+   
+    ){};
     async findOne( email:string): Promise<Customer>{
        try {
            const result = await this.customerRepository.findOne({
-               select:["email","password"],
+               select:["email","password","id"],
                where:{
                    email: email
                },
@@ -26,12 +27,12 @@ export class CustomerService {
    }
    async create(newCustomer:CreateCustomerDto):Promise<Customer> {
     try {
-        const validCustomer = await this.customerRepository.find({
+        const validUser = await this.customerRepository.find({
             where:{
                 email: newCustomer.email
             }
         })
-        if(validCustomer.length) return null;
+        if(validUser.length) return null;
         const saltOrRounds = 10;
         newCustomer.password = await bcrypt.hash(newCustomer.password,saltOrRounds)
         const result = await this.customerRepository.save(newCustomer);

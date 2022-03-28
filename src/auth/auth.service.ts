@@ -1,13 +1,17 @@
 import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
+import {InjectRepository } from "@nestjs/typeorm";
+import { Repository } from 'typeorm'
 import { CustomerService } from '../customer/customer.service';
 import { SigninDto, CreateCustomerDto } from '../customer/dto'
 import * as bcrypt from 'bcrypt';
-import { Customer } from '../entities'
-import { JWT_SECRET, TOEKEN_EXPIRED } from '../config/key'
-import * as jwt from 'jsonwebtoken'
+import { Customer, RefreshToken } from '../entities'
+import { SigninResponse } from './interface'
+import { JwtService } from '../jwt/jwt.service'
 @Injectable( )
 export class AuthService{
-    constructor(private readonly custemerService: CustomerService){
+    constructor(private readonly custemerService: CustomerService,
+    private readonly jwtService: JwtService
+    ){
     }
     async signup(newCustomer: CreateCustomerDto): Promise <Customer>{
         try {
@@ -22,24 +26,27 @@ export class AuthService{
             return null;
         }
     }
-    async signin(customer: SigninDto):Promise< Customer & { token: string}> {
+    async signin(customer: SigninDto):Promise< Customer & { access_token: string, refresh_token: string} > {
         try {
             const result = await this.custemerService.findOne(customer.email);
             if(!result) return null;
             const isValidPass = await bcrypt.compare(customer.password, result.password);
             if(!isValidPass) return null;
-            const token =  await jwt.sign({
-                data:{
-                    id: result.id,
-                    email: result.email
-                }
-            }, JWT_SECRET, { expiresIn: TOEKEN_EXPIRED})
-            const response = Object.assign(result, {token: token})
-            return response
+            const tokens = await this.jwtService.signToken( {email: result.email, user_id:result.id})
+            return {...result, ... tokens }
         } catch (error) {
             console.log(error);
             return null
         }
-       
+    }
+    async refreshToken(refreshToken: string, user_id: number): Promise<any>{
+        try {
+            const result = await this.jwtService.refreshtoken(refreshToken,user_id);
+            if(!result) return null;
+            return result;
+        } catch (error) {
+            console.log(error);
+            return null
+        }
     }
 }

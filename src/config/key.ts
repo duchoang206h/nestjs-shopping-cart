@@ -9,3 +9,4 @@ export const DB_USERNAME=process.env.DB_USERNAME
 export const JWT_SECRET=process.env.JWT_SECRET 
 export const REFRESH_TOKEN_SECRET=process.env.REFRESH_TOKEN_SECRET  
 export const TOEKEN_EXPIRED=process.env.TOEKEN_EXPIRED  
+export const REFRESHTOKEN_TOEKEN_EXPIRED=process.env.REFRESHTOKEN_TOEKEN_EXPIRED  

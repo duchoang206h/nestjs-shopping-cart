@@ -21,7 +21,7 @@ export class Order{
     @Column()
     total: number
 
-    @ManyToOne(()=>Customer, customer => customer.orders)
+    @ManyToOne(()=> Customer, customer => customer.orders)
     @JoinColumn({
         name:"customer_id"
     })

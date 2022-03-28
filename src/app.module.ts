@@ -6,8 +6,9 @@ import { DatabaseModule } from './database/database.module';
 //import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ProductModule } from './product/product.module';
+import { JwtModule } from './jwt/jwt.module';
 @Module({
-  imports: [DatabaseModule, AuthModule, CustomerModule, AdminModule, ProductModule,
+  imports: [DatabaseModule, AuthModule, CustomerModule, AdminModule, ProductModule, JwtModule,
  /*  TypeOrmModule.forRoot({
     host:"localhost",
     type:"postgres",
